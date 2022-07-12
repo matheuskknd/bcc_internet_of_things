@@ -35,7 +35,9 @@ Enquanto o cliente estiver conectado, ele receberá notificações sobre a humid
 
 * A: liga o LED<br/>
 * B: desliga o LED<br/>
-* U: habilita o WiFi (desenvolvimento)
+* U: habilita o WiFi (desenvolvimento)<br/>
+* D: desabilita o WiFi (desenvolvimento)<br/>
+* R: reseta as configuração de WiFi (desenvolvimento)
 
 Estes comandos devem ser enviados pelo terminal no aplicativo *BLE scanner* instalado, por exemplo, no celular do usuário. O comando "U" é destinado a desenvolvedores que desejem atualizar o *firmware* do módulo via WiFi utilizando WiFiManager e ArduinoOTA.
 
@@ -59,7 +61,7 @@ Em seguida, baixe todas as dependências:
 2. Pesquise por "esp32", selecione a última versão e clique em "Instalar";
 3. Volte a janela principal, e navegue até: Ferramentas -> Gerenciar Bibliotecas...;
 4. Pesquise "tzapu" -> Instale a biblioteca WiFiManager (by tablatronix);
-5. Pesquise "ArduinoOTA" -> Instale a biblioteca ArduinoOTA (by Juraj Andrassy);
+5. Pesquise "NimBLE" -> Instale a biblioteca NimBLE-Arduino (by h2zero);
 
 **NOTA**: para utilizar a funcionalidad do OTA pela IDE, é necessário ter o Python [[4](#bib_py)] instalado na máquina. Em sistemas operacionais Linux e Mac Os recomenda-se a instalação pelo *package manager* disponível. Já no sistema operacional Windows 10 ou superior, recomenda-se baixar a versão mais atulizada do Python 3 pela Microsoft Store.
 
@@ -103,3 +105,4 @@ O Windows pode não detectar os drivers automaticamente caso seja a primeira vez
 5. <a name="bib_ble"/>https://randomnerdtutorials.com/esp32-bluetooth-low-energy-ble-arduino-ide/</a><br/>
 6. <a name="bib_led"/>https://capsistema.com.br/index.php/2020/01/19/interface-do-modulo-bluetooth-com-o-esp8266-controlando-um-led/</a><br/>
 7. <a name="bib_diag"/>https://fritzing.org/</a><br/>
+8. <a name="bib_nimble"/>https://github.com/h2zero/NimBLE-Arduino</a>
