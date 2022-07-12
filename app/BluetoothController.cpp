@@ -110,6 +110,8 @@ BluetoothController::~BluetoothController()
 	delete mUpdateControllerPImpl;
 	delete mSensorControllerPImpl;
 	delete mLedControllerPImpl;
+	delete mCharacteristicCallbacksPImpl;
+	delete mServerCallbacksPImpl;
 }
 
 void BluetoothController::setup()
@@ -133,7 +135,8 @@ void BluetoothController::setup()
 
 	// Cria o servidor BLE
 	mServerPImpl = NimBLEDevice::createServer();
-	mServerPImpl->setCallbacks(new ServerCallbacks(this));
+	mServerCallbacksPImpl = new ServerCallbacks(this);
+	mServerPImpl->setCallbacks(mServerCallbacksPImpl);
 	mServerPImpl->advertiseOnDisconnect(true);
 
 	// Cria o serviço BLE
@@ -153,7 +156,7 @@ void BluetoothController::setup()
 
 	// https://www.bluetooth.com/specifications/specs/gatt-specification-supplement-6/
 	// Cria o descritor BLE "dados do sensor"
-	mSensorCharPImpl->addDescriptor(new NimBLE2904());
+	mSensorCharPImpl->addDescriptor(new NimBLE2904()); // No memory leak
 
 	// Cria a característica BLE "controle do LED"
 	strcpy_P((char *)&buffer, LED_CHAR_UUID);
@@ -163,8 +166,9 @@ void BluetoothController::setup()
 			NIMBLE_PROPERTY::WRITE,
 		32);
 
-	mLedCharPImpl->setCallbacks(new CharacteristicCallbacks(this));
-	mLedCharPImpl->setValue(std::string());
+	mCharacteristicCallbacksPImpl = new CharacteristicCallbacks(this);
+	mLedCharPImpl->setCallbacks(mCharacteristicCallbacksPImpl);
+	// mLedCharPImpl->setValue(std::string());
 
 	// Inicia o serviço
 	service->start();

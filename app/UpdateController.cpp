@@ -1,7 +1,6 @@
 #include "UpdateController.h"
 
 #include <WiFiManager.h>
-#include <ArduinoOTA.h>
 
 // Configurações OEM do WIFI e do OTA
 static const auto HOSTNAME = PSTR("Esp32HostName");	 // Device recognizable name
@@ -96,7 +95,7 @@ void UpdateController::initWiFi()
 
 void UpdateController::initOTA()
 {
-	Serial.println("Iniciando OTA...");
+	Serial.println(F("Iniciando OTA..."));
 	ArduinoOTA.setHostname(mId.c_str()); // Define o nome da porta na IDE
 
 	// Configura uma senha para inserir a atualização via OTA

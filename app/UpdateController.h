@@ -12,8 +12,8 @@ private:
 	WiFiManager *mWiFiManagerPImpl = nullptr;
 	WiFiClient *mWiFiClientPImpl = nullptr;
 	uint32_t mRetryCounter = 0;
-	String mId = F("");
 	bool mEnabled = false;
+	String mId;
 
 public:
 	UpdateController();

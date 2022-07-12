@@ -8,6 +8,9 @@ class SensorController;
 class LedController;
 class NimBLECharacteristic;
 class NimBLEServer;
+class CharacteristicCallbacks;
+class ServerCallbacks;
+
 
 class BluetoothController
 {
@@ -18,10 +21,12 @@ private:
 	NimBLECharacteristic *mSensorCharPImpl = nullptr;
 	NimBLECharacteristic *mLedCharPImpl = nullptr;
 	NimBLEServer *mServerPImpl = nullptr;
+	CharacteristicCallbacks *mCharacteristicCallbacksPImpl = nullptr;
+	ServerCallbacks *mServerCallbacksPImpl = nullptr;
 	bool mOldDeviceConnected = false;
 	bool mDeviceConnected = false;
 	uint16_t mSensorValue = 0;
-	String mId = F("");
+	String mId;
 
 	// Variáveis especiais de espera não bloqueante
 	uint32_t mWaitStartTime = 0;

@@ -17,7 +17,7 @@ void setup()
 	gBluetoothController.setup();
 
 	// Fim da inicialização
-	Serial.println("Programa iniciado com sucesso!");
+	Serial.println(F("Programa iniciado com sucesso!"));
 }
 
 /*
