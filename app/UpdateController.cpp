@@ -1,5 +1,6 @@
 #include "UpdateController.h"
 
+#include <ArduinoOTA.h>
 #include <WiFiManager.h>
 
 // Configurações OEM do WIFI e do OTA
