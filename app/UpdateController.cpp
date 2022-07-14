@@ -1,6 +1,7 @@
 #include "UpdateController.h"
-
+/* Adicionado biblioteca arduinoOta para led */
 #include <ArduinoOTA.h>
+
 #include <WiFiManager.h>
 
 // Configurações OEM do WIFI e do OTA
