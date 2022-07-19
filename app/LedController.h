@@ -4,7 +4,8 @@
 
 class LedController
 {
-	uint8_t led;  
+	uint8_t led;
+
 public:
 	LedController();
 	~LedController();

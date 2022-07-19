@@ -9,8 +9,8 @@ class WiFiClient;
 class UpdateController
 {
 private:
-	WiFiManager *mWiFiManagerPImpl = nullptr;
-	WiFiClient *mWiFiClientPImpl = nullptr;
+	WiFiManager *mWiFiManagerP = nullptr;
+	WiFiClient *mWiFiClientP = nullptr;
 	uint32_t mRetryCounter = 0;
 	bool mEnabled = false;
 	String mId;

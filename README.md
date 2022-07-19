@@ -106,3 +106,5 @@ O Windows pode não detectar os drivers automaticamente caso seja a primeira vez
 6. <a name="bib_led"/>https://capsistema.com.br/index.php/2020/01/19/interface-do-modulo-bluetooth-com-o-esp8266-controlando-um-led/</a><br/>
 7. <a name="bib_diag"/>https://fritzing.org/</a><br/>
 8. <a name="bib_nimble"/>https://github.com/h2zero/NimBLE-Arduino</a>
+
+www.espressif.com

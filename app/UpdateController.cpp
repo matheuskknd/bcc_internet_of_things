@@ -1,7 +1,6 @@
 #include "UpdateController.h"
-/* Adicionado biblioteca arduinoOta para led */
-#include <ArduinoOTA.h>
 
+#include <ArduinoOTA.h>
 #include <WiFiManager.h>
 
 // Configurações OEM do WIFI e do OTA
@@ -12,15 +11,15 @@ static const auto OTAPASSWORD = PSTR("protecaoota"); // OTA password
 
 UpdateController::UpdateController()
 {
-	mWiFiManagerPImpl = new WiFiManager; // Cria o objeto mWiFiManagerPImpl
-	mWiFiClientPImpl = new WiFiClient;	 // Cria o objeto mWiFiClientPImpl
+	mWiFiManagerP = new WiFiManager; // Cria o objeto mWiFiManagerP
+	mWiFiClientP = new WiFiClient;	 // Cria o objeto mWiFiClientP
 	mId = String("ESP ") + WiFi.macAddress();
 }
 
 UpdateController::~UpdateController()
 {
-	delete mWiFiClientPImpl;
-	delete mWiFiManagerPImpl;
+	delete mWiFiClientP;
+	delete mWiFiManagerP;
 }
 
 void UpdateController::setup()
@@ -59,7 +58,7 @@ void UpdateController::tearDown()
 	ArduinoOTA.setHostname(nullptr);
 
 	// Desabilita a conexão WiFi
-	mWiFiManagerPImpl->disconnect();
+	mWiFiManagerP->disconnect();
 
 	// Marca como desabilitado
 	mEnabled = false;
@@ -67,7 +66,7 @@ void UpdateController::tearDown()
 
 void UpdateController::resetSettings()
 {
-	mWiFiManagerPImpl->resetSettings();
+	mWiFiManagerP->resetSettings();
 }
 
 String UpdateController::copyId()
@@ -82,7 +81,7 @@ void UpdateController::initWiFi()
 	char bufferPassword[32];
 	strcpy_P((char *)&bufferSsid, SSID);
 	strcpy_P((char *)&bufferPassword, PASSWORD);
-	mWiFiManagerPImpl->autoConnect((const char *)&bufferSsid, (const char *)&bufferPassword);
+	mWiFiManagerP->autoConnect((const char *)&bufferSsid, (const char *)&bufferPassword);
 
 	Serial.print(F("Conectado com sucesso na rede via WifiManager na rede: "));
 	Serial.println(WiFi.SSID());

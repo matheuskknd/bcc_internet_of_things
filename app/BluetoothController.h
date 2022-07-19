@@ -11,18 +11,17 @@ class NimBLEServer;
 class CharacteristicCallbacks;
 class ServerCallbacks;
 
-
 class BluetoothController
 {
 private:
-	UpdateController *mUpdateControllerPImpl = nullptr;
-	SensorController *mSensorControllerPImpl = nullptr;
-	LedController *mLedControllerPImpl = nullptr;
-	NimBLECharacteristic *mSensorCharPImpl = nullptr;
-	NimBLECharacteristic *mLedCharPImpl = nullptr;
-	NimBLEServer *mServerPImpl = nullptr;
-	CharacteristicCallbacks *mCharacteristicCallbacksPImpl = nullptr;
-	ServerCallbacks *mServerCallbacksPImpl = nullptr;
+	UpdateController *mUpdateControllerP = nullptr;
+	SensorController *mSensorControllerP = nullptr;
+	LedController *mLedControllerP = nullptr;
+	NimBLECharacteristic *mSensorCharP = nullptr;
+	NimBLECharacteristic *mCommandCharP = nullptr;
+	NimBLEServer *mServerP = nullptr;
+	CharacteristicCallbacks *mCommandCharCallbacksP = nullptr;
+	ServerCallbacks *mServerCallbacksP = nullptr;
 	bool mOldDeviceConnected = false;
 	bool mDeviceConnected = false;
 	uint16_t mSensorValue = 0;
@@ -46,9 +45,9 @@ private:
 	constexpr static auto SENSOR_CHAR_UUID = PSTR("0eab338e-bb33-4e2b-a220-aae9b0528995");
 
 	/*
-	 * UUID da característica "controle do LED"
+	 * UUID da característica "linha de comando"
 	 */
-	constexpr static auto LED_CHAR_UUID = PSTR("65842cd5-b667-4cc0-a54b-1f53eab7e0ca");
+	constexpr static auto COMMAND_CHAR_UUID = PSTR("65842cd5-b667-4cc0-a54b-1f53eab7e0ca");
 
 public:
 	BluetoothController();
