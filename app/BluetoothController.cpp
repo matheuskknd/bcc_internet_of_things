@@ -104,6 +104,10 @@ BluetoothController::BluetoothController()
 	mSensorControllerP = new SensorController; // Cria o objeto mSensorControllerP
 	mLedControllerP = new LedController;	   // Cria o objeto mLedControllerP
 	mId = mUpdateControllerP->copyId();		   // Copia o identificador único
+
+	// Cria os objetos de callbacks
+	mCommandCharCallbacksP = new CharacteristicCallbacks(this);
+	mServerCallbacksP = new ServerCallbacks(this);
 }
 
 BluetoothController::~BluetoothController()
@@ -111,12 +115,8 @@ BluetoothController::~BluetoothController()
 	delete mUpdateControllerP;
 	delete mSensorControllerP;
 	delete mLedControllerP;
-
-	if (mCommandCharCallbacksP != nullptr)
-		delete mCommandCharCallbacksP;
-
-	if (mServerCallbacksP != nullptr)
-		delete mServerCallbacksP;
+	delete mCommandCharCallbacksP;
+	delete mServerCallbacksP;
 }
 
 void BluetoothController::setup()
@@ -140,9 +140,8 @@ void BluetoothController::setup()
 
 	// Cria o servidor BLE
 	mServerP = NimBLEDevice::createServer();
-	mServerCallbacksP = new ServerCallbacks(this);
 	mServerP->setCallbacks(mServerCallbacksP);
-	mServerP->advertiseOnDisconnect(true);
+	mServerP->advertiseOnDisconnect(false);
 
 	// Cria o serviço BLE
 	char buffer[64];
@@ -153,10 +152,8 @@ void BluetoothController::setup()
 	strcpy_P((char *)&buffer, SENSOR_CHAR_UUID);
 	mSensorCharP = service->createCharacteristic(
 		(const char *)&buffer,
-		NIMBLE_PROPERTY::READ |
-			NIMBLE_PROPERTY::WRITE |
-			NIMBLE_PROPERTY::NOTIFY |
-			NIMBLE_PROPERTY::INDICATE,
+		NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY // NOTIFY não requer ACK
+		/*| NIMBLE_PROPERTY::INDICATE*/,				// INDICATE requer ACK
 		32);
 
 	// https://www.bluetooth.com/specifications/assigned-numbers/
@@ -181,19 +178,24 @@ void BluetoothController::setup()
 	mSensorCharP->addDescriptor(commandBle2904Descriptor); // No memory leak
 
 	// Define as "callbacks" a serem chamadas quando houver escritas
-	mCommandCharCallbacksP = new CharacteristicCallbacks(this);
 	mCommandCharP->setCallbacks(mCommandCharCallbacksP);
 
 	// Inicia o serviço
 	service->start();
 
 	// Inicia a propagar o serviço
-	strcpy_P((char *)&buffer, SERVICE_UUID);
 	BLEAdvertising *advertising = mServerP->getAdvertising();
-	advertising->addServiceUUID((const char *)&buffer);
+	advertising->addServiceUUID(service->getUUID());
+
+	/*
+	 * Se o dispositivo for energizado por bateria, vale a pena configurar
+	 * a resposta de scanner para "false". Isso deve extender a vida da bateria
+	 * ao custo de enviar menos dados.
+	 */
 	advertising->setScanResponse(true);
-	advertising->setMinPreferred(0x20); // Coloque 0x00 para não propagar este parâmetro
+	advertising->setMinPreferred(0x20); // Coloque 0x00 para não propagar os parâmetro
 	advertising->start();
+
 	Serial.println(F("Aguardando um cliente se conectar..."));
 }
 
@@ -230,19 +232,24 @@ void BluetoothController::loop()
 		mWaitStartTime = millis();
 		mTimeToWait = 3;
 	}
-	// Desconectando
-	if (!mDeviceConnected && mOldDeviceConnected)
+	else // Desconectando
 	{
-		mWaitStartTime = millis();
-		mTimeToWait = 500;			  // Dá tempo à stack bluetooth para terminar de processar
-		mServerP->startAdvertising(); // Recomeça a propaganda
-		Serial.println(F("Aguardando um cliente se conectar..."));
-		mOldDeviceConnected = mDeviceConnected;
+		if (mOldDeviceConnected)
+		{
+			mWaitStartTime = millis();
+			mTimeToWait = 500; // Dá tempo à stack bluetooth para terminar de processar
+			mOldDeviceConnected = false;
+		}
+		else if (!mServerP->getAdvertising()->isAdvertising())
+		{
+			mServerP->startAdvertising(); // Recomeça a propaganda
+			Serial.println(F("Aguardando um cliente se conectar..."));
+		}
 	}
 	// Conectando
 	if (mDeviceConnected && !mOldDeviceConnected)
 	{
 		// Código executado sempre que um novo dispositivo se conecta
-		mOldDeviceConnected = mDeviceConnected;
+		mOldDeviceConnected = true;
 	}
 }
