@@ -32,7 +32,7 @@ public:
 };
 
 /*
- * Classe responsável por lidar com eventos de escrita na característica
+ * Classe responsável por lidar com eventos de escrita na característica BLE "linha de comando"
  */
 class CharacteristicCallbacks : public NimBLECharacteristicCallbacks
 {
@@ -132,7 +132,7 @@ void BluetoothController::setup()
 	Serial.println(F("1- Baixe e instale um app de scanner BLE no seu celular"));
 	Serial.println(F("2- Busque por dispositivos BLE no app"));
 	Serial.println(F("3- Conecte ao ESP32"));
-	Serial.println(F("4- Navegue até CUSTOM CHARACTERISTIC em CUSTOM SERVICE e escreva algo"));
+	Serial.println(F("4- Navegue até CUSTOM SERVICE e interaja com as características"));
 	Serial.println(F("5- Pronto! =)"));
 
 	// Cria o dispositivo BLE
@@ -148,34 +148,29 @@ void BluetoothController::setup()
 	strcpy_P((char *)&buffer, SERVICE_UUID);
 	BLEService *service = mServerP->createService((const char *)&buffer);
 
-	// Cria a característica BLE "dados do sensor"
-	strcpy_P((char *)&buffer, SENSOR_CHAR_UUID);
+	// https://www.bluetooth.com/specifications/assigned-numbers/
+	// Cria a característica BLE "sensor de humidade"
 	mSensorCharP = service->createCharacteristic(
-		(const char *)&buffer,
-		NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY // NOTIFY não requer ACK
-		/*| NIMBLE_PROPERTY::INDICATE*/,				// INDICATE requer ACK
-		32);
+		NimBLEUUID(uint16_t(0x2A6F)),	 // UUID número: 10863 (Humidity)
+		NIMBLE_PROPERTY::READ			 // READ permite leituras esporádicas
+			| NIMBLE_PROPERTY::NOTIFY	 // NOTIFY não requer ACK
+		/*| NIMBLE_PROPERTY::INDICATE*/, // INDICATE requer ACK
+		2);								 // Tamanho máximo do valor: 2 bytes
 
 	// https://www.bluetooth.com/specifications/assigned-numbers/
-	// Cria o descritor BLE "dados do sensor"
+	// Cria o descritor BLE "dados do sensor" - necessário para o cliente interpretar o valor lido
 	NimBLE2904 *sensorBle2904Descriptor = new NimBLE2904();
 	sensorBle2904Descriptor->setFormat(BLE2904::FORMAT_UINT16);
-	sensorBle2904Descriptor->setExponent(1);
-	mSensorCharP->addDescriptor(sensorBle2904Descriptor); // No memory leak
-
-	// Cria a característica BLE "linha de comando"
-	strcpy_P((char *)&buffer, COMMAND_CHAR_UUID);
-	mCommandCharP = service->createCharacteristic(
-		(const char *)&buffer,
-		NIMBLE_PROPERTY::READ |
-			NIMBLE_PROPERTY::WRITE,
-		32);
+	//sensorBle2904Descriptor->setUnit(uint16_t(0x27AD)); // GATT Unit: 10157 (percentage)
+	mSensorCharP->addDescriptor(sensorBle2904Descriptor); // Sem memory leak
 
 	// https://www.bluetooth.com/specifications/assigned-numbers/
-	// Cria o descritor BLE "linha de comando"
-	NimBLE2904 *commandBle2904Descriptor = new NimBLE2904();
-	commandBle2904Descriptor->setFormat(BLE2904::FORMAT_UTF8);
-	mSensorCharP->addDescriptor(commandBle2904Descriptor); // No memory leak
+	// Cria a característica BLE "linha de comando"
+	mCommandCharP = service->createCharacteristic(
+		NimBLEUUID(uint16_t(0x2B26)),	 // UUID número: 11046 (IDD Command Data)
+		NIMBLE_PROPERTY::WRITE			 // WRITE permite escrita (requer ACK)
+		/*| NIMBLE_PROPERTY::WRITE_NR*/, // WRITE_NR permite escrita (não requer ACK)
+		1);								 // Tamanho máximo do valor: 1 byte
 
 	// Define as "callbacks" a serem chamadas quando houver escritas
 	mCommandCharP->setCallbacks(mCommandCharCallbacksP);
@@ -190,10 +185,10 @@ void BluetoothController::setup()
 	/*
 	 * Se o dispositivo for energizado por bateria, vale a pena configurar
 	 * a resposta de scanner para "false". Isso deve extender a vida da bateria
-	 * ao custo de enviar menos dados.
+	 * ao custo de enviar menos dados quando escaneado.
 	 */
 	advertising->setScanResponse(true);
-	advertising->setMinPreferred(0x20); // Coloque 0x00 para não propagar os parâmetro
+	advertising->setMinPreferred(0x20); // Coloque 0x00 para não propagar os parâmetros
 	advertising->start();
 
 	Serial.println(F("Aguardando um cliente se conectar..."));

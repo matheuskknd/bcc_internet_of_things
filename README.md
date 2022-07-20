@@ -20,7 +20,7 @@ Segue o planejamento quanto à adiação de funcionalidades:
 [ ] Documentar o [ambiente de desenvolvimento](#doc_dev);<br/>
 [ ] Adicionar e testar as bibliotecas de conexão WiFi e bluetooth;<br/>
 [ ] Documentar o [uso das bibliotecas WiFi e bluetooth](#doc_lib);<br/>
-[ ] Enviar e receber mensagens (bytes) via bluetooth (visualização na saída serial);<br/>
+[X] Enviar e receber mensagens (bytes) via bluetooth (visualização na saída serial);<br/>
 [ ] Adicionar capacidades de atualização via WiFi;<br/>
 [ ] Documentar [integração com sensor e atuador (LED)](#doc_integration);<br/>
 [ ] Adicionar e testar integração com sensor e atuador;<br/>
@@ -102,9 +102,12 @@ O Windows pode não detectar os drivers automaticamente caso seja a primeira vez
 2. <a name="bib_shell"/>https://git-scm.com/download/win</a><br/>
 3. <a name="bib_ide"/>https://www.arduino.cc/en/software</a><br/>
 4. <a name="bib_py"/>https://www.python.org/downloads/</a><br/>
-5. <a name="bib_ble"/>https://randomnerdtutorials.com/esp32-bluetooth-low-energy-ble-arduino-ide/</a><br/>
-6. <a name="bib_led"/>https://capsistema.com.br/index.php/2020/01/19/interface-do-modulo-bluetooth-com-o-esp8266-controlando-um-led/</a><br/>
-7. <a name="bib_diag"/>https://fritzing.org/</a><br/>
-8. <a name="bib_nimble"/>https://github.com/h2zero/NimBLE-Arduino</a>
-
-www.espressif.com
+5. <a name="bib_diag"/>https://fritzing.org/</a><br/>
+6. <a name="bib_led"/>https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink</a><br/>
+7. <a name="bib_pinout"/>https://github.com/AchimPieters/esp32-homekit-camera/blob/master/Images/ESP32-30Pin-devboard.pdf</a>
+8. <a name="bib_ble"/>https://randomnerdtutorials.com/esp32-bluetooth-low-energy-ble-arduino-ide</a><br/>
+9. <a name="bib_nimble"/>https://github.com/h2zero/NimBLE-Arduino</a>
+10. <a name="bib_nRFCon"/>https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp</a>
+11. <a name="bib_devdoc"/>https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html</a>
+12. <a name="bib_uuids"/>https://www.bluetooth.com/specifications/assigned-numbers</a>
+13. <a name="bib_uuidGen"/>https://www.uuidgenerator.net</a>

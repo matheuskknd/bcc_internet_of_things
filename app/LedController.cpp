@@ -2,12 +2,12 @@
 #include <Arduino.h>
 
 // defines - mapeamento de pinos do NodeMCU
-#define D3 0
+#define D4 4
 
 LedController::LedController()
 {
     /* Criação da variavel de liga e desliga */
-    led = D3;
+    led = D4;
 }
 
 LedController::~LedController()
