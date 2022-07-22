@@ -7,6 +7,9 @@
 #include <NimBLEDevice.h>
 #include <Arduino.h>
 
+// Defines
+#define ABS(a) (((a) < 0) ? -(a) : (a))
+
 /*
  * Classe responsável por lidar com eventos no servidor
  */
@@ -20,6 +23,7 @@ public:
 
 	void onConnect(NimBLEServer *server) override
 	{
+		Serial.println(F("Cliente conectado!"));
 		BLEAdvertising *advertising = mParent->mServerP->getAdvertising();
 		mParent->mDeviceConnected = true;
 		advertising->stop();
@@ -155,14 +159,17 @@ void BluetoothController::setup()
 		NIMBLE_PROPERTY::READ			 // READ permite leituras esporádicas
 			| NIMBLE_PROPERTY::NOTIFY	 // NOTIFY não requer ACK
 		/*| NIMBLE_PROPERTY::INDICATE*/, // INDICATE requer ACK
-		2);								 // Tamanho máximo do valor: 2 bytes
+		4);								 // Tamanho máximo do valor: 4 bytes
+
+	// É esperado que o tipo float tenha 4 bytes (32 bits) apenas
+	static_assert(sizeof(float) == 4, "");
 
 	// https://www.bluetooth.com/specifications/assigned-numbers/
 	// Cria o descritor BLE "dados do sensor" - necessário para o cliente interpretar o valor lido
 	NimBLE2904 *sensorBle2904Descriptor = new NimBLE2904();
-	sensorBle2904Descriptor->setFormat(BLE2904::FORMAT_UINT16);
-	//sensorBle2904Descriptor->setUnit(uint16_t(0x27AD)); // GATT Unit: 10157 (percentage)
-	mSensorCharP->addDescriptor(sensorBle2904Descriptor); // Sem memory leak
+	sensorBle2904Descriptor->setFormat(BLE2904::FORMAT_FLOAT32); // IEEE-754 32-bit floating point
+	sensorBle2904Descriptor->setUnit(uint16_t(0x27AD));			 // GATT Unit: 10157 (percentage)
+	mSensorCharP->addDescriptor(sensorBle2904Descriptor);		 // Sem memory leak
 
 	// https://www.bluetooth.com/specifications/assigned-numbers/
 	// Cria a característica BLE "linha de comando"
@@ -214,11 +221,38 @@ void BluetoothController::loop()
 	// Notifica que o valor foi alterado
 	if (mDeviceConnected)
 	{
-		const uint16_t sensorValue = mSensorControllerP->value();
-		if (sensorValue != mSensorValue)
+		// Emite notificação se houver mudança significativa (0.5%)
+		float sensorValue = mSensorControllerP->value();
+		if (ABS(mSensorValue - sensorValue) > 0.5f)
 		{
+			Serial.print(F("Notificando mudança!"));
 			mSensorValue = sensorValue;
-			mSensorCharP->setValue(sensorValue);
+
+			// Requer multiplicar por 100 para ser mostrado como porcentagem
+			// Requerido por: GATT Unit 0x27AD (percentage)
+			sensorValue *= 100;
+
+			// Requer conversão para IEEE-754 32-bit floating point
+			// Requerido por: BLE2904::FORMAT_FLOAT32
+			struct
+			{
+				// A ordem é importante
+				// Ela é: LSB para MSB.
+				uint16_t mantissa : 23;
+				uint16_t expoente : 8;
+				uint16_t sinal : 1;
+			} ieee_754_32_float;
+
+			// A variável ieee_754_32_float ocupa 4 bytes (32 bits)
+			static_assert(sizeof(ieee_754_32_float) == 4, "");
+
+			// Inicializa
+			ieee_754_32_float.sinal = 0;						// +
+			ieee_754_32_float.expoente = 0x40;					// 1
+			ieee_754_32_float.mantissa = uint16_t(sensorValue); // Valor inteiro
+
+			// Altera o valor e notifica aos clientes
+			mSensorCharP->setValue((uint8_t *)&ieee_754_32_float, 4);
 			mSensorCharP->notify();
 		}
 

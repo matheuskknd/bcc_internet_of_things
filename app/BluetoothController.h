@@ -24,7 +24,7 @@ private:
 	ServerCallbacks *mServerCallbacksP = nullptr;
 	bool mOldDeviceConnected = false;
 	bool mDeviceConnected = false;
-	uint16_t mSensorValue = 0;
+	float mSensorValue = 0.0f;
 	String mId;
 
 	// Variáveis especiais de espera não bloqueante

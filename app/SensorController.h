@@ -2,9 +2,17 @@
 
 #include <cstdint>
 
+class DHT;
+
 class SensorController
 {
-	uint16_t mValue = 0;
+private:
+	DHT *mDHTP = nullptr;
+	float mHumidity = 0.0f;
+
+	// Variáveis especiais de espera não bloqueante
+	uint32_t mWaitStartTime = 0;
+	uint32_t mTimeToWait = 0;
 
 public:
 	SensorController();
@@ -23,5 +31,5 @@ public:
 	/*
 	 * Função que retorna o valor atual coletado diretamente do sensor
 	 */
-	uint16_t value();
+	float value();
 };

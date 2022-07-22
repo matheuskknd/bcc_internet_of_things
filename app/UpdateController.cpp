@@ -13,7 +13,10 @@ UpdateController::UpdateController()
 {
 	mWiFiManagerP = new WiFiManager; // Cria o objeto mWiFiManagerP
 	mWiFiClientP = new WiFiClient;	 // Cria o objeto mWiFiClientP
-	mId = String("ESP ") + WiFi.macAddress();
+
+	// Cria o nome do ID único do dispositivo
+	//mId = String("ESP ") + WiFi.macAddress();
+	mId = "ESP32_IOT";
 }
 
 UpdateController::~UpdateController()

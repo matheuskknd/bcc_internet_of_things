@@ -2,12 +2,12 @@
 #include <Arduino.h>
 
 // defines - mapeamento de pinos do NodeMCU
-#define D4 4
+#define D5 5 // Outputs PWM signal at boot
 
 LedController::LedController()
 {
     /* Criação da variavel de liga e desliga */
-    led = D4;
+    led = D5;
 }
 
 LedController::~LedController()

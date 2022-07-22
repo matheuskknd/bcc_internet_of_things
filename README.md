@@ -62,6 +62,8 @@ Em seguida, baixe todas as dependências:
 3. Volte a janela principal, e navegue até: Ferramentas -> Gerenciar Bibliotecas...;
 4. Pesquise "tzapu" -> Instale a biblioteca WiFiManager (by tablatronix);
 5. Pesquise "NimBLE" -> Instale a biblioteca NimBLE-Arduino (by h2zero);
+6. Pesquise "DHT sensor" -> Instale a biblioteca DHT sensor library (by Adafruit);
+7. Pesquise "Adafruit Unified Sensor" -> Instale a biblioteca Adafruit Unified Sensor (by Adafruit).
 
 **NOTA**: para utilizar a funcionalidad do OTA pela IDE, é necessário ter o Python [[4](#bib_py)] instalado na máquina. Em sistemas operacionais Linux e Mac Os recomenda-se a instalação pelo *package manager* disponível. Já no sistema operacional Windows 10 ou superior, recomenda-se baixar a versão mais atulizada do Python 3 pela Microsoft Store.
 
@@ -111,3 +113,4 @@ O Windows pode não detectar os drivers automaticamente caso seja a primeira vez
 11. <a name="bib_devdoc"/>https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html</a>
 12. <a name="bib_uuids"/>https://www.bluetooth.com/specifications/assigned-numbers</a>
 13. <a name="bib_uuidGen"/>https://www.uuidgenerator.net</a>
+14. <a name="bib_dht"/>https://randomnerdtutorials.com/esp32-dht11-dht22-temperature-humidity-sensor-arduino-ide</a>
