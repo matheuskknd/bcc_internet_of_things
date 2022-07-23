@@ -348,7 +348,47 @@ Responsável por:
 
 # <a name="doc_integration"/></a>Integração com sensores e LED
 
-**TODO**
+Este capítulo possui uma breve descrição sobre os componentes de *hardware* e suas configurações (integrações) para funcionarem com a aplicação desenvolvida.
+
+## Atuador (LED)
+
+Lâmpada LED de 5 volts simples que já contém um resistor de 10 k ohms embutido. Permanece acesa se o sinal do pino digital D5 estiver em ```HIGH```, e apagada caso esteja em ```LOW```.
+
+**NOTAS**: por padrão o pino D5 emite um sinal ```HIGH``` durante o *boot*. E volta para ```LOW``` ao fim dele.
+
+## Sensor (DHT11)
+
+Sensor de humidade e temperatura da família de sensores DHT. O sensor utilizado não possui resistor embutido. O DHT11 possui as seguintes características:
+
+||DHT11|
+|:---|:---:|
+|Alcance de temperatura|0 a 50 ºC|
+|Alcance de humidade|20 to 90%|
+|Resolução|Humidade: 1%<br/>Temperatura: 1ºC|
+|Voltagem de operação|3 – 5.5 V DC|
+|Corrente (força)|0.5 – 2.5 mA|
+|Tempo entre medições|1 second|
+|Preço médio|R$5 a R$25|
+
+Operador através da biblioteca ```DHT.h```. Basta configurar o pino como D4 e seguir a esquemática apresentada a seguir.
+
+## Representação esquemática
+
+Segue a representação esquemática da integração entre os componentes:
+
+<center>
+
+![esquematica](projeto_fritzing.png)
+
+</center>
+
+<center>
+
+Diagramado no Fritzing [[5](#bib_diag)].
+
+</center>
+
+O projeto foi feito a partir de exemplos com especificações encontradas no side da Arduino IDE (LED) [[6](#bib_led)] e Random Nerd Tutorials (DHT) [[14](#bib_dht)]. A pinagem da placa sendo utilizada pode ser encontrada no repositório *AchimPieters/esp32-homekit-camera* no GitHub [[7](#bib_pinout)].
 
 # Bibliografia
 
