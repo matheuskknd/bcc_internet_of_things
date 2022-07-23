@@ -15,6 +15,10 @@ private:
 	bool mEnabled = false;
 	String mId;
 
+	// Variáveis especiais de espera não bloqueante
+	uint32_t mWaitStartTime = 0;
+	uint32_t mTimeToWait = 0;
+
 public:
 	UpdateController();
 	~UpdateController();

@@ -3,6 +3,9 @@
 #include <ArduinoOTA.h>
 #include <WiFiManager.h>
 
+// Defines
+#define MAX_ATTEMPT_CONNECTION 10
+
 // Configurações OEM do WIFI e do OTA
 static const auto HOSTNAME = PSTR("Esp32HostName");	 // Device recognizable name
 static const auto SSID = PSTR("Rede ESP32");		 // SSID (Wi-Fi network name)
@@ -15,7 +18,7 @@ UpdateController::UpdateController()
 	mWiFiClientP = new WiFiClient;	 // Cria o objeto mWiFiClientP
 
 	// Cria o nome do ID único do dispositivo
-	//mId = String("ESP ") + WiFi.macAddress();
+	// mId = String("ESP ") + WiFi.macAddress();
 	mId = "ESP32_IOT";
 }
 
@@ -42,6 +45,12 @@ void UpdateController::setup()
 
 void UpdateController::loop()
 {
+	// Updater está "dormindo"
+	if (millis() < mWaitStartTime + mTimeToWait)
+	{
+		return;
+	}
+
 	// Garante que, se houver conexão WiFi, também há o serviço OTA
 	if (mEnabled && ensureWiFi())
 	{
@@ -161,20 +170,29 @@ bool UpdateController::ensureWiFi()
 		Serial.println();
 		Serial.print(F("Endereço MAC: "));
 		Serial.print(WiFi.macAddress()); // Mostra o endereço MAC do ESP32
-
-		mRetryCounter = 0;
 		return true;
 	}
 
-	// Caso contrário, é efetuada uma tentativa de conexão
+	// Caso contrário, são efetuadas tentativas de reconexão MAX_ATTEMPT_CONNECTION vezes
 	if (mRetryCounter == 0)
 	{
+		mRetryCounter = MAX_ATTEMPT_CONNECTION + 1;
 		Serial.println(F("Tentando reconexão WiFi..."));
-		mRetryCounter = 101;
-		WiFi.begin(); // Conecta a uma rede WiFi conhecida
+	}
+	else if (mRetryCounter == 1)
+	{
+		// Caso nenhuma tentativa funcione, o WiFiManager é utilizado como fallback
+		mRetryCounter = 0;
+		initWiFi();
+	}
+	else
+	{
+		// Senão apenas decrementa o contador de retentativas
+		--mRetryCounter;
 	}
 
-	// Caso ainda não tenha se conectado, o contador é decrecido até poder tentar de novo
-	mRetryCounter -= 1;
+	// Dá tempo para Wi-Fi se reconectar
+	mWaitStartTime = millis();
+	mTimeToWait = 3000;
 	return false;
 }

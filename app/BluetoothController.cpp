@@ -225,7 +225,8 @@ void BluetoothController::loop()
 		float sensorValue = mSensorControllerP->value();
 		if (ABS(mSensorValue - sensorValue) > 0.5f)
 		{
-			Serial.print(F("Notificando mudança!"));
+			Serial.print(F("Notificando mudança! Humidade: "));
+			Serial.println(sensorValue);
 			mSensorValue = sensorValue;
 
 			// Requer multiplicar por 100 para ser mostrado como porcentagem

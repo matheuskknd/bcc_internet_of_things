@@ -55,9 +55,6 @@ void SensorController::loop()
   {
     // Salva o valor lido com sucesso mais recente
     mHumidity = humidity;
-
-    Serial.print(F("Humidade: "));
-    Serial.println(mHumidity);
   }
 }
 
