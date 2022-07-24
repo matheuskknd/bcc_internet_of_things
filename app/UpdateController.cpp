@@ -161,15 +161,20 @@ bool UpdateController::ensureWiFi()
 	auto status = WiFi.status();
 	if (status == WL_CONNECTED)
 	{
-		Serial.println();
-		Serial.print(F("Conectado com sucesso na rede: "));
-		Serial.println(WiFi.SSID());
-		Serial.println();
-		Serial.print(F("IP obtido: "));
-		Serial.print(WiFi.localIP()); // Mostra o endereço IP obtido via DHCP
-		Serial.println();
-		Serial.print(F("Endereço MAC: "));
-		Serial.print(WiFi.macAddress()); // Mostra o endereço MAC do ESP32
+		if (mRetryCounter != 0)
+		{
+			Serial.println();
+			Serial.print(F("Conectado com sucesso na rede: "));
+			Serial.println(WiFi.SSID());
+			Serial.println();
+			Serial.print(F("IP obtido: "));
+			Serial.print(WiFi.localIP()); // Mostra o endereço IP obtido via DHCP
+			Serial.println();
+			Serial.print(F("Endereço MAC: "));
+			Serial.print(WiFi.macAddress()); // Mostra o endereço MAC do ESP32
+			mRetryCounter = 0;
+		}
+
 		return true;
 	}
 
