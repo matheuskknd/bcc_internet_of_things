@@ -1,5 +1,6 @@
 # Projeto desenvolvimento de aplicação utilizando Bluetooth
 
+
 Este repositório contém os arquivos e especificações do projeto final da disciplina de Internet das Coisas (IOT). O projeto escolhido foi: "Desenvolvimento de aplicação utilizando Bluetooth". As seguintes funcionalidades devem ser implementadas:
 
 * Conexão Wi-Fi:
@@ -22,10 +23,10 @@ Segue o planejamento quanto à adiação de funcionalidades:
 [X] Documentar o [uso das bibliotecas Wi-Fi e bluetooth](#doc_lib);<br/>
 [X] Enviar e receber mensagens (bytes) via bluetooth (visualização na saída serial);<br/>
 [X] Adicionar capacidades de atualização via Wi-Fi;<br/>
-[ ] Documentar [integração com sensor e atuador (LED)](#doc_integration);<br/>
+[X] Documentar [integração com sensor e atuador (LED)](#doc_integration);<br/>
 [ ] Preparar um vídeo demonstrativo das funcionalidades;<br/>
 [X] Adicionar e testar integração com sensor e atuador;<br/>
-[ ] Preprara slides de apresentação.
+[x] Preprara slides de apresentação.
 
 # <a name="doc_app"/></a>Especificação da aplicação
 

@@ -40,16 +40,25 @@ public:
  */
 class CharacteristicCallbacks : public NimBLECharacteristicCallbacks
 {
+	NimBLECharacteristic *mCharacteristicP = nullptr;
 	BluetoothController *mParent;
+	TaskHandle_t taskHandler;
 
 public:
 	CharacteristicCallbacks(BluetoothController *parent) : mParent(parent) {}
 	~CharacteristicCallbacks() = default;
 
-	void onWrite(NimBLECharacteristic *characteristic) override
+	/*
+	 * Este função é executada no núcleo 1, pois a função WiFiManager::autoConnect
+	 * requer que o núcleo 0 permaneça em IDLE durante a chamada. Do contrário o ESP32
+	 * encontra um estado cujo comportamento é indefinido e reinicia.
+	 */
+	static void onWriteImpl(void *_self)
 	{
+		auto self = (CharacteristicCallbacks *)_self;
+
 		// Esta classe é utlizada apenas pela característica "controle do LED"
-		std::string value = characteristic->getValue();
+		std::string value = self->mCharacteristicP->getValue();
 
 		if (value.length() > 0)
 		{
@@ -68,23 +77,23 @@ public:
 			{
 			case 'A':
 				// Liga o LED
-				mParent->mLedControllerP->set(true);
+				self->mParent->mLedControllerP->set(true);
 				break;
 			case 'B':
 				// Desliga o LED
-				mParent->mLedControllerP->set(false);
+				self->mParent->mLedControllerP->set(false);
 				break;
 			case 'U':
 				// Habilita o WiFi
-				mParent->mUpdateControllerP->setup();
+				self->mParent->mUpdateControllerP->setup();
 				break;
 			case 'D':
 				// Desabilita o WiFi
-				mParent->mUpdateControllerP->tearDown();
+				self->mParent->mUpdateControllerP->tearDown();
 				break;
 			case 'R':
 				// Reseta as configurações de WiFi
-				mParent->mUpdateControllerP->resetSettings();
+				self->mParent->mUpdateControllerP->resetSettings();
 				break;
 			default:
 				Serial.println(F("Opção inválida"));
@@ -95,6 +104,30 @@ public:
 		{
 			Serial.println(F("Comando inválido recebido"));
 		}
+
+		// A tarefa não pode retornar, ao invés disso ela tem que ser deletada do kernel
+		vTaskDelete(nullptr);
+	}
+
+	/*
+	 * Este função é executada no núcleo 0, porém apenas defere a execução para o núcleo 1
+	 */
+	void onWrite(NimBLECharacteristic *characteristic) override
+	{
+		// Salva um ponteiro para a característica neste objeto (sempre será a característica BLE "linha de comando")
+		mCharacteristicP = characteristic;
+
+		// Cria uma tarefa que executa a função "onWriteImpl" no núcleo 
+		// Cria uma tarefa que executa onWriteImpl
+		// create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
+		xTaskCreatePinnedToCore(
+			onWriteImpl,   // Função de tarefa.
+			"onWriteImpl", /* nome da tarefa. */
+			10000,		   /* Tamanho da pilha da tarefa */
+			(void *)this,  /* parâmetro da tarefa */
+			1,			   /* prioridade da tarefa */
+			&taskHandler,  /* Identificador de tarefas para acompanhar a tarefa criada */
+			1);			   /* fixar tarefa no núcleo 0 */
 	}
 };
 
